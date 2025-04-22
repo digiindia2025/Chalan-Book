@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]:focus {
+  outline: none;
+}
+
+.focus-css:focus {
+  outline: black solid 1px !important;
+  border: 1px solid black !important;
+}
+.focus-css:active {
+  outline: black solid 1px !important;
+  border: 1px solid black !important;
+}
+
+
+/* Global styles or specific to your input elements */
+input:focus {
+  outline: none; /* To remove the default browser outline if you want to customize */
+  border-color: blue; /* Example: Change the border color on focus */
+  box-shadow: 0 0 5px rgba(0, 0, 255, 0.5); /* Example: Add a subtle box shadow on focus */
+  /* Add any other visual styles you want for the focused state */
+}
+
+/* If your inputs have specific classes */
+/* .your-input-class:focus {
+ 
+} */
+
+
