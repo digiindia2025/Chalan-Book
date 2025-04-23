@@ -1039,7 +1039,7 @@ const handleSummaryKeyDown = (
               summaryInputRefs.current[3] = el;
             }}
             onFocus={() => setCurrentSection('totals')}
-            // onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
+            onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
           />
         </div>
 
