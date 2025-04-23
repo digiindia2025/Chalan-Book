@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { toast as notify } from "react-hot-toast";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 import {getPrintableHTML} from "../../utils/getPrintTable"
+
+
 const clearOriginalTable = () => {
   initialTableDetails.forEach((row) => {
     for (const key in row) {
@@ -65,6 +67,36 @@ interface Client {
   // Add other relevant client properties
 }
 
+// ////////////////////////////aman/////////////////////
+const handleProductKeyDown = (
+  e: React.KeyboardEvent<HTMLInputElement>,
+  index: number
+) => {
+  const key = e.key;
+
+  if (key === "ArrowRight") {
+    e.preventDefault();
+    const nextInput = document.getElementById(`product-input-${index + 1}`) as HTMLInputElement | null;
+    nextInput?.focus();
+  } else if (key === "ArrowLeft") {
+    e.preventDefault();
+    const prevInput = document.getElementById(`product-input-${index - 1}`) as HTMLInputElement | null;
+    prevInput?.focus();
+  } else if (key === "ArrowDown") {
+    e.preventDefault();
+    const downInput = document.getElementById(`product-input-${index + 5}`) as HTMLInputElement | null; // assuming 5 inputs per row
+    downInput?.focus();
+  } else if (key === "ArrowUp") {
+    e.preventDefault();
+    const upInput = document.getElementById(`product-input-${index - 5}`) as HTMLInputElement | null;
+    upInput?.focus();
+  } else if (key === "Enter") {
+    e.preventDefault(); // Prevent default Enter behavior
+    const nextInput = document.getElementById(`product-input-${index + 1}`) as HTMLInputElement | null;
+    nextInput?.focus();
+  }
+};
+
 
 const PackingDetails: React.FC = () => {
   const router=useRouter();
@@ -98,6 +130,11 @@ const PackingDetails: React.FC = () => {
   const qty2Refs = useRef<Array<React.RefObject<HTMLInputElement>>>([]);
   const qty3Refs = useRef<Array<React.RefObject<HTMLInputElement>>>([]);
 
+  // /////////////////////////////aman/////////////////////
+  const summaryInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+
+
   // Initialize refs for each row when component mounts
   useEffect(() => {
     qty1Refs.current = Array(tableDetails.length)
@@ -113,6 +150,7 @@ const PackingDetails: React.FC = () => {
       .map((_, i) => qty3Refs.current[i] || React.createRef());
   }, [tableDetails.length]);
 
+  
   // Function to focus on the qty input of the next row based on column
   const focusNextRow = (currentRowIndex: number, column: number) => {
     const nextRowIndex = currentRowIndex + 1;
@@ -562,76 +600,93 @@ const PackingDetails: React.FC = () => {
 
 // some changes added by aman tiwari
 
-const priceInputRefs = useRef<Array<HTMLInputElement | null>>([null, null, null]);
+// Changed: Reorganized refs and navigation state
+const priceInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 const invoiceInputRef = useRef<HTMLInputElement>(null);
 const gstInputRef = useRef<HTMLInputElement>(null);
 const tcsInputRef = useRef<HTMLInputElement>(null);
 const weightInputRef = useRef<HTMLInputElement>(null);
 const bagsInputRef = useRef<HTMLInputElement>(null);
-
-const [currentPriceIndex, setCurrentPriceIndex] = useState<number>(0);
+// const [currentPriceIndex, setCurrentPriceIndex] = useState<number>(0);
 const [currentSection, setCurrentSection] = useState<'prices' | 'invoice' | 'totals'>('prices');
 
-useKeyboardNavigation({
-  onLeft: () => {
-    if (currentSection === 'prices' && currentPriceIndex > 0) {
-      setCurrentPriceIndex(prev => prev - 1);
-      priceInputRefs.current[currentPriceIndex - 1]?.focus();
-    } else if (currentSection === 'invoice') {
-      if (document.activeElement === gstInputRef.current) {
-        invoiceInputRef.current?.focus();
-      } else if (document.activeElement === tcsInputRef.current) {
-        gstInputRef.current?.focus();
-      }
-    } else if (currentSection === 'totals') {
-      if (document.activeElement === bagsInputRef.current) {
-        weightInputRef.current?.focus();
-      }
-    }
-  },
-  onRight: () => {
-    if (currentSection === 'prices' && currentPriceIndex < 2) {
-      setCurrentPriceIndex(prev => prev + 1);
-      priceInputRefs.current[currentPriceIndex + 1]?.focus();
-    } else if (currentSection === 'invoice') {
-      if (document.activeElement === invoiceInputRef.current) {
-        gstInputRef.current?.focus();
-      } else if (document.activeElement === gstInputRef.current) {
-        tcsInputRef.current?.focus();
-      }
-    } else if (currentSection === 'totals') {
-      if (document.activeElement === weightInputRef.current) {
-        bagsInputRef.current?.focus();
-      }
-    }
-  },
-  onUp: () => {
-    if (currentSection === 'invoice') {
-      if (document.activeElement === gstInputRef.current) {
-        invoiceInputRef.current?.focus();
-      } else if (document.activeElement === tcsInputRef.current) {
-        gstInputRef.current?.focus();
-      }
-    } else if (currentSection === 'totals') {
-      if (document.activeElement === bagsInputRef.current) {
-        weightInputRef.current?.focus();
-      }
-    }
-  },
-  onDown: () => {
-    if (currentSection === 'invoice') {
-      if (document.activeElement === invoiceInputRef.current) {
-        gstInputRef.current?.focus();
-      } else if (document.activeElement === gstInputRef.current) {
-        tcsInputRef.current?.focus();
-      }
-    } else if (currentSection === 'totals') {
-      if (document.activeElement === weightInputRef.current) {
-        bagsInputRef.current?.focus();
-      }
-    }
+
+// useKeyboardNavigation({
+//   enabled: currentSection === 'prices', // ✅ Only enable in 'prices' section
+//   onLeft: () => {
+//     if (currentSection === 'prices' && currentPriceIndex > 0) {
+//       setCurrentPriceIndex(prev => prev - 1);
+//       priceInputRefs.current[currentPriceIndex - 1]?.focus();
+//     } else if (currentSection === 'invoice') {
+//       if (document.activeElement === gstInputRef.current) {
+//         invoiceInputRef.current?.focus();
+//       } else if (document.activeElement === tcsInputRef.current) {
+//         gstInputRef.current?.focus();
+//       }
+//     } else if (currentSection === 'totals') {
+//       if (document.activeElement === bagsInputRef.current) {
+//         weightInputRef.current?.focus();
+//       }
+//     }
+//   },
+//   onRight: () => {
+//     if (currentSection === 'prices' && currentPriceIndex < 2) {
+//       setCurrentPriceIndex(prev => prev + 1);
+//       priceInputRefs.current[currentPriceIndex + 1]?.focus();
+//     } else if (currentSection === 'invoice') {
+//       if (document.activeElement === invoiceInputRef.current) {
+//         gstInputRef.current?.focus();
+//       } else if (document.activeElement === gstInputRef.current) {
+//         tcsInputRef.current?.focus();
+//       }
+//     } else if (currentSection === 'totals') {
+//       if (document.activeElement === weightInputRef.current) {
+//         bagsInputRef.current?.focus();
+//       }
+//     }
+//   },
+//   onUp: () => {
+//     if (currentSection === 'invoice') {
+//       if (document.activeElement === gstInputRef.current) {
+//         invoiceInputRef.current?.focus();
+//       } else if (document.activeElement === tcsInputRef.current) {
+//         gstInputRef.current?.focus();
+//       }
+//     } else if (currentSection === 'totals') {
+//       if (document.activeElement === bagsInputRef.current) {
+//         weightInputRef.current?.focus();
+//       }
+//     }
+//   },
+//   onDown: () => {
+//     if (currentSection === 'invoice') {
+//       if (document.activeElement === invoiceInputRef.current) {
+//         gstInputRef.current?.focus();
+//       } else if (document.activeElement === gstInputRef.current) {
+//         tcsInputRef.current?.focus();
+//       }
+//     } else if (currentSection === 'totals') {
+//       if (document.activeElement === weightInputRef.current) {
+//         bagsInputRef.current?.focus();
+//       }
+//     }
+//   }
+// });
+
+
+const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    const next = inputRefs.current[index + 1];
+    if (next) next.focus();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const prev = inputRefs.current[index - 1];
+    if (prev) prev.focus();
   }
-});
+};
 
 const renderProductPricesRow = () => (
   <tr className="bg-yellow-200 font-bold">
@@ -644,16 +699,31 @@ const renderProductPricesRow = () => (
           value={product.price || ""}
           onChange={(e) => handleProductChange(i, "price", e.target.value)}
           className="w-full p-2 border rounded bg-gray-50"
-          ref={el => { priceInputRefs.current[i] = el; }}
-          onFocus={() => {
-            setCurrentPriceIndex(i);
-            setCurrentSection('prices');
-          }}
+          ref={(el) => {
+            inputRefs.current[i] = el; // store ref
+          }} // store ref
+          onKeyDown={(e) => handleKeyDown(e, i)} // handle arrow keys
         />
       </td>
     ))}
   </tr>
 );
+// ///////////////////////////////////aman//////////////////////
+const handleSummaryKeyDown = (
+  e: React.KeyboardEvent<HTMLInputElement>,
+  index: number
+) => {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = summaryInputRefs.current[index + 1];
+    if (next) next.focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prev = summaryInputRefs.current[index - 1];
+    if (prev) prev.focus();
+  }
+};
+
 
 
 
@@ -735,6 +805,8 @@ const renderProductPricesRow = () => (
       </section>
 
       {/* Packing Table */}
+      {/* /////////////////////////aman//////////////// */}
+      
       <section className="bg-white shadow-md rounded-lg p-6 mb-8 overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -743,16 +815,21 @@ const renderProductPricesRow = () => (
               <th className="p-3" />
               {products.map((product, i) => (
                 <th key={i} colSpan={2} className="border p-2">
-                  <input
-                    type="text"
-                    placeholder="Product Name"
-                    className="w-full p-2 border rounded bg-gray-50"
-                    value={product.name}
-                    onChange={(e) => handleProductChange(i, "name", e.target.value)}
-                  />
+                <input
+  type="text"
+  placeholder="Product Name"
+  className="w-full p-2 border rounded bg-gray-50"
+  value={product.name}
+  onChange={(e) => handleProductChange(i, "name", e.target.value)}
+  onKeyDown={(e) => handleProductKeyDown(e, i)}
+  id={`product-input-${i}`}
+/>
+
                 </th>
               ))}
             </tr>
+
+            
 
             {/* Column Headers Row */}
             <tr className="bg-yellow-200">
@@ -874,89 +951,100 @@ const renderProductPricesRow = () => (
 
       {/* Summary Section */}
       <section className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-yellow-100 p-4 rounded-lg">
-            <div className="flex justify-between mb-2">
-              <span>Invoice No.</span>
-              <input
-                type="text"
-                value={invoiceNo}
-                onChange={(e) => setInvoiceNo(e.target.value)}
-                className="border p-2 rounded w-40 bg-white text-black"
-                ref={invoiceInputRef}
-                onFocus={() => setCurrentSection('invoice')}
-              />
-            </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="bg-yellow-100 p-4 rounded-lg">
+      <div className="flex justify-between mb-2">
+        <span>Invoice No.</span>
+        <input
+          type="text"
+          value={invoiceNo || ""}
+          onChange={(e) => setInvoiceNo(e.target.value)}
+          className="border p-2 rounded w-40 bg-white text-black"
+          ref={(el) => {
+            summaryInputRefs.current[0] = el;
+          }}
+          onFocus={() => setCurrentSection('invoice')}
+          onKeyDown={(e) => handleSummaryKeyDown(e, 0)}
+        />
+      </div>
 
-            <div className="flex justify-between py-2 font-semibold">
-              <span>Total Roll Qty</span>
-              <span>{Math.round(totalQty * 100) / 100}</span>
-            </div>
-            
-            <div className="flex justify-between py-2 font-semibold">
-              <span>Basic Amount</span>
-              <span>{Math.round(totalPrice * 100) / 100}</span>
-            </div>
-            
-            <div className="flex justify-between mb-2">
-              <span>GST</span>
-              <input
-                type="text"
-                value={gst}
-                onChange={handleGstChange}
-                className="border p-2 rounded w-40 bg-white text-black"
-                ref={gstInputRef}
-                onFocus={() => setCurrentSection('invoice')}
-              />
-            </div>
+      <div className="flex justify-between py-2 font-semibold">
+        <span>Total Roll Qty</span>
+        <span>{Math.round(totalQty * 100) / 100}</span>
+      </div>
 
-            <div className="flex justify-between mb-2">
-              <span>TCS/FARE</span>
-              <input
-                type="text"
-                value={tcsFare}
-                onChange={(e) => setTcsFare(e.target.value ? Number(e.target.value) : "")}
-                className="border p-2 rounded w-40 bg-white text-black"
-                ref={tcsInputRef}
-                onFocus={() => setCurrentSection('invoice')}
-              />
-            </div>
+      <div className="flex justify-between py-2 font-semibold">
+        <span>Basic Amount</span>
+        <span>{Math.round(totalPrice * 100) / 100}</span>
+      </div>
 
-            <div className="flex justify-between bg-yellow-300 p-3 rounded-lg font-bold">
-              <span>Total Amount</span>
-              <span>₹ {Math.round(Number(grandTotal) * 100) / 100}</span>
-            </div>
-          </div>
+      <div className="flex justify-between mb-2">
+        <span>GST</span>
+        <input
+          type="text"
+          value={gst || ""}
+          onChange={(e) => setGst(Number(e.target.value))}
+          className="border p-2 rounded w-40 bg-white text-black"
+          ref={(el) => {
+            summaryInputRefs.current[1] = el;
+          }}
+          onFocus={() => setCurrentSection('invoice')}
+          onKeyDown={(e) => handleSummaryKeyDown(e, 1)}
+        />
+      </div>
 
-          <div className="bg-yellow-100 p-4 rounded-lg">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex justify-between mb-2">
-                <span>Total Weight</span>
-                <input
-                  type="text"
-                  value={totalWeight}
-                  onChange={(e) => setTotalWeight(e.target.value)}
-                  onKeyDown={handleTotalBagesKeyDown}
-                  className="border p-2 rounded w-40 bg-white text-black"
-                  ref={weightInputRef}
-                  onFocus={() => setCurrentSection('totals')}
-                />
-              </div>
-              
-              <div className="flex justify-between mb-2">
-                <span>Total Bags</span>
-                <input
-                  type="text"
-                  value={totalBags}
-                  onChange={handleTotalBagsChange}
-                  className="border p-2 rounded w-40 bg-white text-black"
-                  ref={bagsInputRef}
-                  onFocus={() => setCurrentSection('totals')}
-                />
-              </div>
-            </div>
-          </div>
+      <div className="flex justify-between mb-2">
+        <span>TCS/FARE</span>
+        <input
+          type="text"
+          value={tcsFare || ""}
+          onChange={(e) => setTcsFare(Number(e.target.value))}
+          className="border p-2 rounded w-40 bg-white text-black"
+          ref={(el) => {
+            summaryInputRefs.current[2] = el;
+          }}
+          onFocus={() => setCurrentSection('invoice')}
+          onKeyDown={(e) => handleSummaryKeyDown(e, 2)}
+        />
+      </div>
+
+      <div className="flex justify-between bg-yellow-300 p-3 rounded-lg font-bold">
+        <span>Total Amount</span>
+        <span>₹ {Math.round(grandTotal * 100) / 100}</span>
+      </div>
+    </div>
+
+    <div className="bg-yellow-100 p-4 rounded-lg">
+      <div className="grid grid-cols-1 gap-4">
+        <div className="flex justify-between mb-2">
+          <span>Total Weight</span>
+          <input
+            type="text"
+            value={totalWeight || ""}
+            onChange={(e) => setTotalWeight(e.target.value)}
+            className="border p-2 rounded w-40 bg-white text-black"
+            ref={(el) => { summaryInputRefs.current[3] = el; }}
+            onFocus={() => setCurrentSection('totals')}
+            onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
+          />
         </div>
+
+        <div className="flex justify-between mb-2">
+          <span>Total Bags</span>
+          <input
+            type="text"
+            value={totalBags || ""}
+            onChange={(e) => setTotalBags(Number(e.target.value))}
+            className="border p-2 rounded w-40 bg-white text-black"
+            ref={(el) => { summaryInputRefs.current[4] = el; }}
+            onFocus={() => setCurrentSection('totals')}
+            onKeyDown={(e) => handleSummaryKeyDown(e, 4)}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+{/* </section> */}
 
         <button
           onClick={handleSave}
