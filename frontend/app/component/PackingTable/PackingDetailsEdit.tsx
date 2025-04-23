@@ -696,11 +696,11 @@ const handleSummaryKeyDown = (
             >
                <option value="">Select Client</option>
                {clients?.length > 0 ? (
-  clients.map((client) => (
-    <option key={client?._id} value={client?.company}>
-      {client?.name}
-    </option>
-  ))
+               clients.map((client) => (
+               <option key={client?._id} value={client?.company}>
+               {client?.name}
+               </option>
+                ))
 ) : (
   <option disabled>No clients available</option>
 )}
@@ -1033,12 +1033,13 @@ const handleSummaryKeyDown = (
             type="text"
             value={totalWeight || ""}
             onChange={(e) => setTotalWeight(e.target.value)}
+            onKeyDown={handleTotalBagesKeyDown}
             className="border p-2 rounded w-40 bg-white text-black"
             ref={(el) => {
               summaryInputRefs.current[3] = el;
             }}
             onFocus={() => setCurrentSection('totals')}
-            onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
+            // onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
           />
         </div>
 
