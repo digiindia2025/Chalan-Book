@@ -1036,10 +1036,11 @@ const handleSummaryKeyDown = (
             type="text"
             value={totalBags}
             onChange={(e) => setTotalBags(Number(e.target.value))}
+            // onKeyDown={handleTotalBagesKeyDown}
             className="border p-2 rounded w-40 bg-white text-black"
             ref={(el) => { summaryInputRefs.current[4] = el; }}
             onFocus={() => setCurrentSection('totals')}
-            // onKeyDown={(e) => handleSummaryKeyDown(e, 4)}
+            onKeyDown={(e) => handleSummaryKeyDown(e, 4)}
           />
         </div>
       </div>
