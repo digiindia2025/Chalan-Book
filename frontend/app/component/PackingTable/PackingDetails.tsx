@@ -1015,20 +1015,23 @@ const handleSummaryKeyDown = (
     </div>
 
     <div className="bg-yellow-100 p-4 rounded-lg">
-      <div className="grid grid-cols-1 gap-4">
-        <div className="flex justify-between mb-2">
-          <span>Total Weight</span>
-          <input
-            type="text"
-            value={totalWeight}
-            onChange={(e) => setTotalWeight(e.target.value)}
-            onKeyDown={handleTotalBagesKeyDown}
-            className="border p-2 rounded w-40 bg-white text-black"
-            ref={(el) => { summaryInputRefs.current[3] = el; }}
-            onFocus={() => setCurrentSection('totals')}
-            // onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
-          />
-        </div>
+  <div className="grid grid-cols-1 gap-4">
+    <div className="flex justify-between mb-2">
+      <span>Total Weight</span>
+      <input
+        type="text"
+        value={totalWeight}
+        onChange={(e) => setTotalWeight(e.target.value)}
+        onKeyDown={(e) => {
+          handleTotalBagesKeyDown(e);
+          handleSummaryKeyDown(e, 3);
+        }}
+        className="border p-2 rounded w-40 bg-white text-black"
+        ref={(el) => { summaryInputRefs.current[3] = el; }}
+        onFocus={() => setCurrentSection('totals')}
+      />
+    </div>
+  
 
         <div className="flex justify-between mb-2">
           <span>Total Bags</span>
