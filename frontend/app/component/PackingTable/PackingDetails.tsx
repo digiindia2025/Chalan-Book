@@ -570,7 +570,7 @@ const PackingDetails: React.FC = () => {
   const fetchChallanCount=async()=>{
     try {
       const response = await axiosInstance.get("/api/v1/challan/challan-count");
-  const totalCount=Number(response?.data?.count) + 400;
+  const totalCount=Number(response?.data?.count) + 530;
   const value=totalCount.toString();
       setChallanNo(value);
     } catch (error) {
@@ -1015,31 +1015,39 @@ const handleSummaryKeyDown = (
     </div>
 
     <div className="bg-yellow-100 p-4 rounded-lg">
-      <div className="grid grid-cols-1 gap-4">
-        <div className="flex justify-between mb-2">
-          <span>Total Weight</span>
-          <input
-            type="text"
-            value={totalWeight}
-            onChange={(e) => setTotalWeight(e.target.value)}
-            onKeyDown={handleTotalBagesKeyDown}
-            className="border p-2 rounded w-40 bg-white text-black"
-            ref={(el) => { summaryInputRefs.current[3] = el; }}
-            onFocus={() => setCurrentSection('totals')}
-            // onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
-          />
-        </div>
+  <div className="grid grid-cols-1 gap-4">
+    <div className="flex justify-between mb-2">
+      <span>Total Weight</span>
+      <input
+        type="text"
+        value={totalWeight}
+        onChange={(e) => setTotalWeight(e.target.value)}
+        onKeyDown={(e) => {
+          handleTotalBagesKeyDown(e);
+          handleSummaryKeyDown(e, 3);
+        }}
+        className="border p-2 rounded w-40 bg-white text-black"
+        ref={(el) => { summaryInputRefs.current[3] = el; }}
+        onFocus={() => setCurrentSection('totals')}
+      />
+    </div>
+  
 
         <div className="flex justify-between mb-2">
           <span>Total Bags</span>
           <input
             type="text"
-            value={totalBags || ""}
+            value={totalBags}
             onChange={(e) => setTotalBags(Number(e.target.value))}
+            onKeyDown={(e) => {
+              handleTotalBagesKeyDown(e);
+              handleSummaryKeyDown(e, 4);
+            }}
+            // onKeyDown={handleTotalBagesKeyDown}
             className="border p-2 rounded w-40 bg-white text-black"
             ref={(el) => { summaryInputRefs.current[4] = el; }}
             onFocus={() => setCurrentSection('totals')}
-            onKeyDown={(e) => handleSummaryKeyDown(e, 4)}
+            // onKeyDown={(e) => handleSummaryKeyDown(e, 4)}
           />
         </div>
       </div>

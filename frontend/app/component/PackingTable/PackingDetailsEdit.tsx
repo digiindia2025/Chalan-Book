@@ -1025,7 +1025,7 @@ const handleSummaryKeyDown = (
       </div>
     </div>
 
-    <div className="bg-yellow-100 p-4 rounded-lg">
+   <div className="bg-yellow-100 p-4 rounded-lg">
       <div className="grid grid-cols-1 gap-4">
         <div className="flex justify-between mb-2">
           <span>Total Weight</span>
@@ -1033,13 +1033,15 @@ const handleSummaryKeyDown = (
             type="text"
             value={totalWeight || ""}
             onChange={(e) => setTotalWeight(e.target.value)}
-            onKeyDown={handleTotalBagesKeyDown}
+            onKeyDown={(e) => {
+              handleTotalBagesKeyDown(e);
+              handleSummaryKeyDown(e, 3);
+            }}
             className="border p-2 rounded w-40 bg-white text-black"
             ref={(el) => {
               summaryInputRefs.current[3] = el;
             }}
             onFocus={() => setCurrentSection('totals')}
-            // onKeyDown={(e) => handleSummaryKeyDown(e, 3)}
           />
         </div>
 
@@ -1081,5 +1083,5 @@ const handleSummaryKeyDown = (
     </div>
   );
 };
-
+ 
 export default PackingDetailsEdit;
