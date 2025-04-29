@@ -16,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
 
 import AuthRoute from "./routes/Auth.route.js";
