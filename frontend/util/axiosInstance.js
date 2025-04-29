@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:5000",
-  baseURL: "https://api.ziptech.site",
+  baseURL: "chalan-book.vercel.app",
   headers: {
     "Content-Type": "application/json",
   },
