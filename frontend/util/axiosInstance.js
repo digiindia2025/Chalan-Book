@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   // baseURL: "http://localhost:5000",
-  baseURL: "chalan-book.vercel.app",
+  baseURL: "https://chalan-book-2.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },
